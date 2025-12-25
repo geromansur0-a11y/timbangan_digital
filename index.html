@@ -1,0 +1,710 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Timbangan Digital - Web App</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+        
+        body {
+            background: linear-gradient(135deg, #1a2980, #26d0ce);
+            color: #333;
+            min-height: 100vh;
+            padding: 20px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+        }
+        
+        .container {
+            width: 100%;
+            max-width: 500px;
+            background-color: rgba(255, 255, 255, 0.95);
+            border-radius: 20px;
+            box-shadow: 0 15px 30px rgba(0, 0, 0, 0.2);
+            overflow: hidden;
+        }
+        
+        .header {
+            background: linear-gradient(to right, #2c3e50, #4a6491);
+            color: white;
+            padding: 25px 20px;
+            text-align: center;
+            position: relative;
+        }
+        
+        .header h1 {
+            font-size: 1.8rem;
+            margin-bottom: 5px;
+        }
+        
+        .header p {
+            font-size: 0.9rem;
+            opacity: 0.9;
+        }
+        
+        .status-indicator {
+            position: absolute;
+            top: 20px;
+            right: 20px;
+            display: flex;
+            align-items: center;
+            font-size: 0.8rem;
+        }
+        
+        .status-dot {
+            width: 10px;
+            height: 10px;
+            border-radius: 50%;
+            background-color: #e74c3c;
+            margin-right: 8px;
+        }
+        
+        .status-dot.connected {
+            background-color: #2ecc71;
+            animation: pulse 2s infinite;
+        }
+        
+        @keyframes pulse {
+            0% { opacity: 1; }
+            50% { opacity: 0.6; }
+            100% { opacity: 1; }
+        }
+        
+        .weight-display {
+            padding: 30px 20px;
+            text-align: center;
+            background-color: #f8f9fa;
+            border-bottom: 1px solid #eee;
+        }
+        
+        .weight-value {
+            font-size: 5rem;
+            font-weight: 700;
+            color: #2c3e50;
+            margin-bottom: 5px;
+            min-height: 100px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        
+        .weight-unit {
+            font-size: 1.5rem;
+            color: #7f8c8d;
+            margin-left: 10px;
+        }
+        
+        .weight-stability {
+            font-size: 1rem;
+            color: #7f8c8d;
+            margin-top: 10px;
+        }
+        
+        .controls {
+            padding: 20px;
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
+        }
+        
+        .btn {
+            padding: 15px 20px;
+            border: none;
+            border-radius: 10px;
+            font-size: 1rem;
+            font-weight: 600;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: all 0.3s ease;
+        }
+        
+        .btn i {
+            margin-right: 10px;
+        }
+        
+        .btn-connect {
+            background-color: #3498db;
+            color: white;
+        }
+        
+        .btn-connect:hover {
+            background-color: #2980b9;
+        }
+        
+        .btn-disconnect {
+            background-color: #e74c3c;
+            color: white;
+        }
+        
+        .btn-disconnect:hover {
+            background-color: #c0392b;
+        }
+        
+        .btn-tare {
+            background-color: #2ecc71;
+            color: white;
+        }
+        
+        .btn-tare:hover {
+            background-color: #27ae60;
+        }
+        
+        .btn-unit {
+            background-color: #9b59b6;
+            color: white;
+        }
+        
+        .btn-unit:hover {
+            background-color: #8e44ad;
+        }
+        
+        .settings {
+            padding: 20px;
+            border-top: 1px solid #eee;
+        }
+        
+        .setting-group {
+            margin-bottom: 20px;
+        }
+        
+        .setting-group h3 {
+            font-size: 1.1rem;
+            margin-bottom: 10px;
+            color: #2c3e50;
+        }
+        
+        .unit-selector {
+            display: flex;
+            border-radius: 10px;
+            overflow: hidden;
+            border: 1px solid #ddd;
+        }
+        
+        .unit-option {
+            flex: 1;
+            padding: 12px;
+            text-align: center;
+            background-color: #f8f9fa;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+        
+        .unit-option.active {
+            background-color: #3498db;
+            color: white;
+        }
+        
+        .data-log {
+            padding: 20px;
+            border-top: 1px solid #eee;
+        }
+        
+        .data-log h3 {
+            font-size: 1.1rem;
+            margin-bottom: 10px;
+            color: #2c3e50;
+        }
+        
+        .log-list {
+            max-height: 150px;
+            overflow-y: auto;
+            border: 1px solid #eee;
+            border-radius: 8px;
+            padding: 10px;
+            background-color: #f8f9fa;
+        }
+        
+        .log-item {
+            padding: 8px 0;
+            border-bottom: 1px solid #eee;
+            font-size: 0.9rem;
+            display: flex;
+            justify-content: space-between;
+        }
+        
+        .log-item:last-child {
+            border-bottom: none;
+        }
+        
+        .timestamp {
+            color: #7f8c8d;
+            font-size: 0.8rem;
+        }
+        
+        .footer {
+            padding: 15px;
+            text-align: center;
+            font-size: 0.8rem;
+            color: #7f8c8d;
+            background-color: #f8f9fa;
+            border-top: 1px solid #eee;
+        }
+        
+        .simulation-notice {
+            background-color: #fff3cd;
+            color: #856404;
+            padding: 10px;
+            border-radius: 5px;
+            margin-top: 15px;
+            font-size: 0.9rem;
+            text-align: center;
+            border: 1px solid #ffeaa7;
+        }
+        
+        /* Responsive adjustments */
+        @media (max-width: 480px) {
+            .weight-value {
+                font-size: 4rem;
+            }
+            
+            .header h1 {
+                font-size: 1.5rem;
+            }
+        }
+        
+        /* Loading animation */
+        .loading {
+            display: inline-block;
+            width: 20px;
+            height: 20px;
+            border: 3px solid rgba(255,255,255,.3);
+            border-radius: 50%;
+            border-top-color: #fff;
+            animation: spin 1s ease-in-out infinite;
+        }
+        
+        @keyframes spin {
+            to { transform: rotate(360deg); }
+        }
+        
+        .hidden {
+            display: none;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1><i class="fas fa-weight-hanging"></i> Timbangan Digital</h1>
+            <p>Aplikasi berbasis web untuk timbangan digital</p>
+            <div class="status-indicator">
+                <div class="status-dot" id="statusDot"></div>
+                <span id="statusText">Terputus</span>
+            </div>
+        </div>
+        
+        <div class="weight-display">
+            <div class="weight-value">
+                <span id="weightValue">0.00</span>
+                <span class="weight-unit" id="weightUnit">kg</span>
+            </div>
+            <div class="weight-stability" id="stabilityIndicator">Stabil</div>
+        </div>
+        
+        <div class="controls">
+            <button class="btn btn-connect" id="connectBtn">
+                <i class="fas fa-plug"></i> Sambungkan Timbangan
+            </button>
+            <button class="btn btn-disconnect hidden" id="disconnectBtn">
+                <i class="fas fa-plug"></i> Putuskan Koneksi
+            </button>
+            
+            <div style="display: flex; gap: 10px;">
+                <button class="btn btn-tare" id="tareBtn">
+                    <i class="fas fa-balance-scale"></i> Tare (Nol)
+                </button>
+                <button class="btn btn-unit" id="unitBtn">
+                    <i class="fas fa-exchange-alt"></i> Ganti Satuan
+                </button>
+            </div>
+        </div>
+        
+        <div class="settings">
+            <div class="setting-group">
+                <h3><i class="fas fa-cog"></i> Pengaturan Satuan</h3>
+                <div class="unit-selector">
+                    <div class="unit-option active" data-unit="kg">Kilogram (kg)</div>
+                    <div class="unit-option" data-unit="g">Gram (g)</div>
+                    <div class="unit-option" data-unit="oz">Ons (oz)</div>
+                    <div class="unit-option" data-unit="lb">Pound (lb)</div>
+                </div>
+            </div>
+        </div>
+        
+        <div class="data-log">
+            <h3><i class="fas fa-history"></i> Riwayat Penimbangan</h3>
+            <div class="log-list" id="logList">
+                <div class="log-item">
+                    <span>0.00 kg</span>
+                    <span class="timestamp">-</span>
+                </div>
+                <!-- Log items will be added here dynamically -->
+            </div>
+        </div>
+        
+        <div class="footer">
+            <p>Timbangan Digital Web App &copy; 2023 | Kompatibel dengan browser Chrome/Edge di Android</p>
+            <div class="simulation-notice" id="simulationNotice">
+                <i class="fas fa-info-circle"></i> Mode simulasi aktif. Sambungkan timbangan nyata melalui Bluetooth/Serial.
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Aplikasi Timbangan Digital Berbasis Web
+        document.addEventListener('DOMContentLoaded', function() {
+            // Elemen DOM
+            const connectBtn = document.getElementById('connectBtn');
+            const disconnectBtn = document.getElementById('disconnectBtn');
+            const tareBtn = document.getElementById('tareBtn');
+            const unitBtn = document.getElementById('unitBtn');
+            const weightValue = document.getElementById('weightValue');
+            const weightUnit = document.getElementById('weightUnit');
+            const statusDot = document.getElementById('statusDot');
+            const statusText = document.getElementById('statusText');
+            const stabilityIndicator = document.getElementById('stabilityIndicator');
+            const logList = document.getElementById('logList');
+            const unitOptions = document.querySelectorAll('.unit-option');
+            const simulationNotice = document.getElementById('simulationNotice');
+            
+            // State aplikasi
+            let isConnected = false;
+            let currentWeight = 0.00;
+            let currentUnit = 'kg';
+            let isStable = true;
+            let port = null;
+            let reader = null;
+            let logEntries = [];
+            let simulationInterval = null;
+            
+            // Konstanta konversi
+            const conversionRates = {
+                kg: 1,
+                g: 1000,
+                oz: 35.274,
+                lb: 2.20462
+            };
+            
+            // Format waktu untuk log
+            function formatTime(date) {
+                return date.toLocaleTimeString('id-ID', { 
+                    hour: '2-digit', 
+                    minute: '2-digit',
+                    second: '2-digit'
+                });
+            }
+            
+            // Tambah entri ke log
+            function addToLog(weight, unit) {
+                const now = new Date();
+                const timestamp = formatTime(now);
+                
+                logEntries.unshift({
+                    weight: weight,
+                    unit: unit,
+                    timestamp: timestamp
+                });
+                
+                // Batasi jumlah entri log
+                if (logEntries.length > 10) {
+                    logEntries.pop();
+                }
+                
+                // Update tampilan log
+                updateLogDisplay();
+            }
+            
+            // Update tampilan log
+            function updateLogDisplay() {
+                logList.innerHTML = '';
+                
+                if (logEntries.length === 0) {
+                    const emptyItem = document.createElement('div');
+                    emptyItem.className = 'log-item';
+                    emptyItem.innerHTML = '<span>Belum ada data</span><span class="timestamp">-</span>';
+                    logList.appendChild(emptyItem);
+                    return;
+                }
+                
+                logEntries.forEach(entry => {
+                    const logItem = document.createElement('div');
+                    logItem.className = 'log-item';
+                    logItem.innerHTML = `
+                        <span>${entry.weight.toFixed(2)} ${entry.unit}</span>
+                        <span class="timestamp">${entry.timestamp}</span>
+                    `;
+                    logList.appendChild(logItem);
+                });
+            }
+            
+            // Konversi berat
+            function convertWeight(weight, fromUnit, toUnit) {
+                // Konversi ke kilogram dulu
+                const weightInKg = weight / conversionRates[fromUnit];
+                // Konversi ke unit tujuan
+                return weightInKg * conversionRates[toUnit];
+            }
+            
+            // Update tampilan berat
+            function updateWeightDisplay(weight, unit) {
+                const convertedWeight = convertWeight(weight, 'kg', unit);
+                weightValue.textContent = convertedWeight.toFixed(2);
+                weightUnit.textContent = unit;
+                
+                // Update indikator stabilitas
+                if (isStable) {
+                    stabilityIndicator.textContent = "Stabil";
+                    stabilityIndicator.style.color = "#2ecc71";
+                } else {
+                    stabilityIndicator.textContent = "Tidak Stabil";
+                    stabilityIndicator.style.color = "#e74c3c";
+                }
+            }
+            
+            // Simulasi data timbangan (untuk pengujian tanpa perangkat nyata)
+            function startSimulation() {
+                if (simulationInterval) clearInterval(simulationInterval);
+                
+                simulationInterval = setInterval(() => {
+                    // Simulasi perubahan berat acak
+                    const change = (Math.random() - 0.5) * 0.1;
+                    currentWeight += change;
+                    
+                    // Pastikan berat tidak negatif
+                    if (currentWeight < 0) currentWeight = 0;
+                    
+                    // Simulasi status stabil/tidak stabil
+                    isStable = Math.random() > 0.2;
+                    
+                    // Update tampilan
+                    updateWeightDisplay(currentWeight, currentUnit);
+                    
+                    // Tambah ke log setiap 10 detik jika stabil
+                    if (isStable && Math.random() > 0.7) {
+                        addToLog(currentWeight, currentUnit);
+                    }
+                }, 500);
+            }
+            
+            // Hentikan simulasi
+            function stopSimulation() {
+                if (simulationInterval) {
+                    clearInterval(simulationInterval);
+                    simulationInterval = null;
+                }
+            }
+            
+            // Sambungkan ke timbangan via Web Serial API
+            async function connectToScale() {
+                try {
+                    // Cek dukungan browser
+                    if (!('serial' in navigator)) {
+                        alert('Browser Anda tidak mendukung Web Serial API. Gunakan Chrome/Edge versi terbaru.');
+                        return;
+                    }
+                    
+                    // Minta port serial
+                    port = await navigator.serial.requestPort();
+                    
+                    // Buka port dengan baud rate 9600 (standar untuk banyak timbangan)
+                    await port.open({ baudRate: 9600 });
+                    
+                    // Update status koneksi
+                    setConnected(true);
+                    
+                    // Mulai membaca data dari port
+                    readScaleData();
+                    
+                } catch (error) {
+                    console.error('Error connecting to scale:', error);
+                    alert('Gagal menyambungkan ke timbangan: ' + error.message);
+                    setConnected(false);
+                }
+            }
+            
+            // Baca data dari timbangan
+            async function readScaleData() {
+                const decoder = new TextDecoder();
+                
+                try {
+                    while (port && port.readable) {
+                        reader = port.readable.getReader();
+                        
+                        try {
+                            while (true) {
+                                const { value, done } = await reader.read();
+                                if (done) break;
+                                
+                                // Parse data dari timbangan
+                                const data = decoder.decode(value);
+                                processScaleData(data);
+                            }
+                        } catch (error) {
+                            console.error('Error reading from scale:', error);
+                        } finally {
+                            reader.releaseLock();
+                        }
+                    }
+                } catch (error) {
+                    console.error('Error in read loop:', error);
+                }
+            }
+            
+            // Proses data dari timbangan
+            function processScaleData(data) {
+                // Format data bervariasi tergantung timbangan
+                // Contoh parsing untuk format umum: "1.23 kg"
+                const lines = data.split('\n');
+                
+                lines.forEach(line => {
+                    const trimmed = line.trim();
+                    if (trimmed.length === 0) return;
+                    
+                    // Coba ekstrak angka dari data
+                    const match = trimmed.match(/[-+]?[0-9]*\.?[0-9]+/);
+                    if (match) {
+                        const newWeight = parseFloat(match[0]);
+                        
+                        // Deteksi perubahan berat yang signifikan
+                        const diff = Math.abs(newWeight - currentWeight);
+                        currentWeight = newWeight;
+                        
+                        // Tentukan apakah berat stabil (perubahan kecil)
+                        isStable = diff < 0.01;
+                        
+                        // Update tampilan
+                        updateWeightDisplay(currentWeight, currentUnit);
+                        
+                        // Tambah ke log jika stabil
+                        if (isStable) {
+                            addToLog(currentWeight, currentUnit);
+                        }
+                    }
+                });
+            }
+            
+            // Putuskan koneksi
+            async function disconnectFromScale() {
+                try {
+                    if (reader) {
+                        await reader.cancel();
+                    }
+                    
+                    if (port) {
+                        await port.close();
+                        port = null;
+                    }
+                    
+                    setConnected(false);
+                } catch (error) {
+                    console.error('Error disconnecting:', error);
+                }
+            }
+            
+            // Set status koneksi
+            function setConnected(connected) {
+                isConnected = connected;
+                
+                if (connected) {
+                    statusDot.classList.add('connected');
+                    statusText.textContent = 'Tersambung';
+                    connectBtn.classList.add('hidden');
+                    disconnectBtn.classList.remove('hidden');
+                    simulationNotice.classList.add('hidden');
+                    stopSimulation();
+                } else {
+                    statusDot.classList.remove('connected');
+                    statusText.textContent = 'Terputus';
+                    connectBtn.classList.remove('hidden');
+                    disconnectBtn.classList.add('hidden');
+                    simulationNotice.classList.remove('hidden');
+                    
+                    // Mulai simulasi jika tidak terhubung ke perangkat nyata
+                    startSimulation();
+                }
+            }
+            
+            // Fungsi Tare (nol)
+            function tareScale() {
+                currentWeight = 0.00;
+                updateWeightDisplay(currentWeight, currentUnit);
+                addToLog(0.00, currentUnit);
+                
+                // Kirim perintah Tare ke timbangan jika tersambung
+                if (isConnected && port) {
+                    // Format perintah tergantung timbangan
+                    // Contoh: kirim karakter 'T' untuk perintah tare
+                    const encoder = new TextEncoder();
+                    const writer = port.writable.getWriter();
+                    writer.write(encoder.encode('T'));
+                    writer.releaseLock();
+                }
+            }
+            
+            // Ganti satuan
+            function changeUnit() {
+                const units = ['kg', 'g', 'oz', 'lb'];
+                const currentIndex = units.indexOf(currentUnit);
+                const nextIndex = (currentIndex + 1) % units.length;
+                setUnit(units[nextIndex]);
+            }
+            
+            // Set satuan aktif
+            function setUnit(unit) {
+                currentUnit = unit;
+                
+                // Update tampilan unit
+                updateWeightDisplay(currentWeight, currentUnit);
+                
+                // Update unit selector
+                unitOptions.forEach(option => {
+                    if (option.dataset.unit === unit) {
+                        option.classList.add('active');
+                    } else {
+                        option.classList.remove('active');
+                    }
+                });
+            }
+            
+            // Event Listeners
+            connectBtn.addEventListener('click', connectToScale);
+            disconnectBtn.addEventListener('click', disconnectFromScale);
+            tareBtn.addEventListener('click', tareScale);
+            unitBtn.addEventListener('click', changeUnit);
+            
+            // Event listener untuk pemilih unit
+            unitOptions.forEach(option => {
+                option.addEventListener('click', () => {
+                    setUnit(option.dataset.unit);
+                });
+            });
+            
+            // Inisialisasi
+            updateWeightDisplay(currentWeight, currentUnit);
+            updateLogDisplay();
+            setConnected(false); // Mulai dengan mode simulasi
+            
+            // Tambah beberapa data log contoh
+            addToLog(1.25, 'kg');
+            addToLog(0.75, 'kg');
+            addToLog(2.10, 'kg');
+            
+            // Info untuk pengguna
+            console.log('Aplikasi Timbangan Digital siap digunakan.');
+            console.log('1. Sambungkan timbangan via Bluetooth/Serial (Chrome/Edge di Android)');
+            console.log('2. Atau gunakan mode simulasi untuk pengujian');
+        });
+    </script>
+</body>
+  </html>
