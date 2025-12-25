@@ -5,15 +5,15 @@ Release version. v1.00 (c)2025 adikoto ImdoCreative.Ltd
 
 ✅️ Koneksi Timbangan Nyata - Menggunakan Web Serial API untuk komunikasi dengan timbangan via Bluetooth/Serial
 
-✅️ nMode Simulasi - Bekerja tanpa timbangan nyata untuk pengujian
+✅️  Mode Simulasi - Bekerja tanpa timbangan nyata untuk pengujian
 
-✅️ Fungsi Tare - Mengatur berat ke nol
+✅️  Fungsi Tare - Mengatur berat ke nol
 
-✅️ Konversi Satuan - kg, gram, ons, pound
+✅️  Konversi Satuan - kg, gram, ons, pound
 
-✅️ Riwayat Penimbangan - Menyimpan data penimbangan terakhir
+✅️  Riwayat Penimbangan - Menyimpan data penimbangan terakhir
 
-✅️ Indikator Status - Menunjukkan status koneksi dan stabilitas berat
+✅️  Indikator Status - Menunjukkan status koneksi dan stabilitas berat
 # Cara Menggunakan:
 1. Simulasi:
 
@@ -37,7 +37,8 @@ Release version. v1.00 (c)2025 adikoto ImdoCreative.Ltd
 ♦️ Ganti Satuan: Berganti antara kg, g, oz, lb
 
 ♦️ Riwayat: Lihat data penimbangan sebelumnya
-# Catatan Penting:
+
+# ⚠️ Catatan Penting:
 Web Serial API hanya didukung di Chrome/Edge versi terbaru
 
 Untuk timbangan Bluetooth, pastikan perangkat sudah dipasangkan dengan ponsel
