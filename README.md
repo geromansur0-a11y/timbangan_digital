@@ -44,3 +44,5 @@ Web Serial API hanya didukung di Chrome/Edge versi terbaru
 Untuk timbangan Bluetooth, pastikan perangkat sudah dipasangkan dengan ponsel
 
 Format data timbangan mungkin perlu disesuaikan dengan perangkat Anda
+# demo preview
+https://geromansur0-a11y.github.io/timbangan_digital/
